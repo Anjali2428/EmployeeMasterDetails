@@ -1,0 +1,153 @@
+﻿@model EmpTask.Models.employeeWiseProMaster
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info">
+        <strong>Information ! </strong>   @TempData["InfoMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+else if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        <strong>Success ! </strong>   @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Error ! </strong>   @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>employeeWiseProMaster</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.RowId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProjectNo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ProjectNo, ViewBag.ProjectList as SelectList, "Select a Project", new { @class = "form-control", onchange = "updateTotalAmount(this)" })
+                @Html.ValidationMessageFor(model => model.ProjectNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AssignDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.AssignDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                @Html.ValidationMessageFor(model => model.AssignDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.EmployeeId, ViewBag.EmployeeList as SelectList, "Select a Employee", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TotalAmount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TotalAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", id = "TotalAmountField" } })
+                @Html.ValidationMessageFor(model => model.TotalAmount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiscPerc, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DiscPerc, new { htmlAttributes = new { @class = "form-control", @id = "DiscPerc" } })
+                @Html.ValidationMessageFor(model => model.DiscPerc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiscAmount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DiscAmount, new { htmlAttributes = new { @class = "form-control", @id = "DiscAmount" } })
+                @Html.ValidationMessageFor(model => model.DiscAmount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NetAmount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NetAmount, new { htmlAttributes = new { @class = "form-control", @id = "NetAmount" } })
+                @Html.ValidationMessageFor(model => model.NetAmount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    <script>
+    function getRateByProjectId(projectId) {
+        var projects = @Html.Raw(Json.Encode(ViewBag.projectDataList));
+        var selectedProject = projects.filter(p => p.RowId == projectId);
+        return selectedProject.length > 0 ? selectedProject[0].Rate : 0;
+    }
+
+    function updateTotalAmount(dropdown) {
+        var projectId = dropdown.value;
+        var rate = getRateByProjectId(projectId);
+        document.getElementById('TotalAmountField').value = rate;
+    }
+
+        function updateAmounts() {
+        var discPerc = parseFloat(document.getElementById('DiscPerc').value) || 0;
+        var totalAmount = parseFloat(document.getElementById('TotalAmountField').value) || 0;
+
+        // Calculate DiscAmount
+        var discAmount = (discPerc / 100) * totalAmount;
+
+        // Calculate NetAmount
+        var netAmount = totalAmount - discAmount;
+
+        // Set values in respective fields
+        document.getElementById('DiscAmount').value = discAmount.toFixed(2);
+        document.getElementById('NetAmount').value = netAmount.toFixed(2);
+    }
+
+    // Attach the updateAmounts function to the change event of DiscPerc
+    document.getElementById('DiscPerc').addEventListener('input', updateAmounts);
+
+    // Call the updateAmounts function initially to set values on page load
+    updateAmounts();
+
+    </script>
+}
+

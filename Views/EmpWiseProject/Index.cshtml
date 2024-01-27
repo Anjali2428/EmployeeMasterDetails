@@ -1,0 +1,97 @@
+﻿@model IEnumerable<EmpTask.Models.employeeWiseProMaster>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info">
+        <strong>Information ! </strong>   @TempData["InfoMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+else if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        <strong>Success ! </strong>   @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Error ! </strong>   @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<p>
+    @Html.ActionLink("ADD", "Create", null, new { @class = "btn btn-primary" })
+</p>
+<table class="table table-bordered table-hover table-responsive">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ProjectNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AssignDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmployeeId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TotalAmount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DiscPerc)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DiscAmount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NetAmount)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiscPerc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiscAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NetAmount)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.RowId }, new { @class = "btn btn-primary" }) &nbsp;
+                @Html.ActionLink("Delete", "Delete", new { id = item.RowId }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    }
+
+</table>
